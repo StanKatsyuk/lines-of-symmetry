@@ -1,4 +1,4 @@
-
+import math
 
 PRECISION = .001
 
@@ -83,9 +83,9 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         mid = midpoint(p1, p2)
 
         if m == 0:  # horizontal line
-            return (float('inf'), round(mid.x, PRECISION))
+            return (float('inf'), round(mid.x, int(-math.log10(PRECISION))))
         if m == float('inf'):  # vertical line
-            return (0, round(mid.y, PRECISION))
+            return (0, round(mid.y, int(-math.log10(PRECISION))))
         
         # Calculate the slope of the perpendicular bisector line.
         m_perpendicular = -1 / m
@@ -93,7 +93,8 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         # Calculate the y-intercept (c) of the perpendicular bisector line using its midpoint.
         c = mid.y - m_perpendicular * mid.x
         
-        return (round(m_perpendicular, PRECISION), round(c, PRECISION))
+        return (round(m_perpendicular, int(-math.log10(PRECISION))), round(c, int(-math.log10(PRECISION))))
+
 
     # Using a set avoids duplicates and ensures that each unique bisector is considered.
     potential_bisectors = set()
@@ -116,3 +117,54 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         :return: True if the points are close within the tolerance; otherwise, False.
         """
         return abs(p1.x - p2.x) < tol and abs(p1.y - p2.y) < tol
+
+    def is_symmetry_line(m: float, c: float, points: list[Point]) -> bool:
+        if m == float('inf'):  # Check for a vertical line
+            for p in points:
+                # Calculate the x-coordinate of the reflected point for a vertical line
+                # When the line of symmetry is vertical (m == float('inf')), calculate the x-coordinate
+                # of the reflected point by reflecting the point p.x across the vertical line defined by x = c,
+                # where 'c' is twice the y-intercept of the line and represents the x-coordinate of the
+                # reflected point.
+                reflected_x = round(2 * c - p.x, 6)
+                reflected_y = round(p.y, 6)
+                
+                # Check if the reflected point exists in the original set of points
+                if not any(is_close(Point(reflected_x, reflected_y), orig) for orig in points):
+                    return False
+        else:
+            for p in points:
+                # Calculate the coordinates of the reflected point across the line y = mx + c.
+                # To do this, we first find the perpendicular distance 'd' from the original
+                # point (p.x, p.y) to the line. Then, we move the point by '2d' units in the
+                # direction perpendicular to the line to obtain the reflected coordinates.
+                # 'numerator_x' corresponds to the x-coordinate, and 'numerator_y' corresponds
+                # to the y-coordinate of the reflected point.
+                numerator_x = p.x + (p.y - c) * m
+                numerator_y = (p.y - c) - m * p.x
+
+                # Calculate the coordinates of the reflected point using the formula for
+                # reflection across a line. 'denominator' represents a constant value, and
+                # we use it to adjust the movement of the point to obtain the reflected
+                # coordinates 'reflected_x' and 'reflected_y'. Rounding is applied to ensure
+                # precision up to 6 decimal places.
+                denominator = 1 + m**2
+                reflected_x = round(p.x - 2 * numerator_x / denominator, 6)
+                reflected_y = round(p.y - 2 * numerator_y / denominator, 6)
+                
+                # Check if the reflected point exists in the original set of points
+                if not any(is_close(Point(reflected_x, reflected_y), orig) for orig in points):
+                    return False
+            
+        return True
+
+    # Initialize a set to store the identified symmetry lines.
+    symmetry_lines = set()
+
+    # Iterate through the potential bisectors and check if they are symmetry lines.
+    for m, c in potential_bisectors:
+        if is_symmetry_line(m, c, points):
+            symmetry_lines.add((m, c))
+
+    # Return the set of identified symmetry lines.
+    return symmetry_lines
