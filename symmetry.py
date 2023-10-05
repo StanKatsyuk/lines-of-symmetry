@@ -1,3 +1,7 @@
+
+
+PRECISION = .001
+
 class Point:
     """
     Represents a 2D point with x and y coordinates.
@@ -55,3 +59,29 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         if p2.x - p1.x == 0:  # vertical line
             return float('inf')
         return (p2.y - p1.y) / (p2.x - p1.x)
+
+    def perpendicular_bisector(p1: Point, p2: Point) -> tuple[float, float]:
+        """
+        Calculate the equation of the perpendicular bisector line between two points.
+
+        This function calculates the slope and midpoint of the line segment
+        defined by two points, and then computes the equation of the perpendicular
+        bisector line passing through the midpoint.
+
+        :param p1: The first point.
+        :param p2: The second point.
+        :return: A tuple (m, c) representing the equation of the perpendicular bisector line
+                in the form 'y = mx + c'. The tuple values are rounded to the global
+                precision defined as 'PRECISION' (default: 0.001).
+                For vertical lines, it returns (float('inf'), round(mid.x, PRECISION)).
+                For horizontal lines, it returns (0, round(mid.y, PRECISION)).
+        """
+        m = slope(p1, p2)
+        mid = midpoint(p1, p2)
+        if m == 0:  # horizontal line
+            return (float('inf'), round(mid.x, PRECISION))
+        if m == float('inf'):  # vertical line
+            return (0, round(mid.y, PRECISION))
+        m_perpendicular = -1 / m
+        c = mid.y - m_perpendicular * mid.x
+        return (round(m_perpendicular, PRECISION), round(c, PRECISION))
