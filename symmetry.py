@@ -76,12 +76,32 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
                 For vertical lines, it returns (float('inf'), round(mid.x, PRECISION)).
                 For horizontal lines, it returns (0, round(mid.y, PRECISION)).
         """
+        # Calculate the slope of the line passing through two points, p1 and p2.
         m = slope(p1, p2)
+
+        # Calculate the midpoint between points p1 and p2.
         mid = midpoint(p1, p2)
+
         if m == 0:  # horizontal line
             return (float('inf'), round(mid.x, PRECISION))
         if m == float('inf'):  # vertical line
             return (0, round(mid.y, PRECISION))
+        
+        # Calculate the slope of the perpendicular bisector line.
         m_perpendicular = -1 / m
+
+        # Calculate the y-intercept (c) of the perpendicular bisector line using its midpoint.
         c = mid.y - m_perpendicular * mid.x
+        
         return (round(m_perpendicular, PRECISION), round(c, PRECISION))
+
+    # Using a set avoids duplicates and ensures that each unique bisector is considered.
+    potential_bisectors = set()
+
+    # Calculate potential bisectors between pairs of points in the input list.
+    # Iterate through all combinations of points, ensuring that each unique bisector is added to the set.
+    # TODO: This nested loop results in O(n^2) time complexity and should probably be optimized later on.
+    for i in range(len(points)):
+        for j in range(i + 1, len(points)):
+            bisector = perpendicular_bisector(points[i], points[j])
+            potential_bisectors.add(bisector)
