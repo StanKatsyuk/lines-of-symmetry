@@ -105,3 +105,14 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         for j in range(i + 1, len(points)):
             bisector = perpendicular_bisector(points[i], points[j])
             potential_bisectors.add(bisector)
+
+    def is_close(p1: Point, p2: Point, tol=PRECISION) -> bool:
+        """
+        Check if two points are close enough within the given fixed tolerance.
+
+        :param p1: The first point.
+        :param p2: The second point.
+        :param tol: The fixed tolerance value for point closeness. This is necessary due to potential floating-point imprecision in calculations.
+        :return: True if the points are close within the tolerance; otherwise, False.
+        """
+        return abs(p1.x - p2.x) < tol and abs(p1.y - p2.y) < tol
