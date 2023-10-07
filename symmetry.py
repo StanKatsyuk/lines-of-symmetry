@@ -38,6 +38,14 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
     if not points:
         return set()
 
+    if len(points) == 1:
+        return {points[0]}  # Return a set containing the single point
+
+    if len(points) > 100:
+        print('too many')
+        raise ValueError('Algorithm is not optimized to run with more than 100 points')
+
+
     def midpoint(p1, p2):
         """
         Calculate the midpoint between two points.
