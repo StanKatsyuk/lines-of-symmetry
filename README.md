@@ -37,7 +37,9 @@ Near matches within the specified tolerance are recognized.
 
 ## Running Tests
 
-To ensure the correctness of the Line of Symmetry Detection algorithm, you can run a suite of tests. Follow the steps below to execute the tests.
+To ensure the correctness of the Line of Symmetry Detection algorithm, you can run a suite of tests by executing:
+
+`pytest` from the root of the repo
 
 **Note:** Make sure you have installed the required packages, including `pytest`, which is listed in the `requirements.txt` file. You can install these dependencies using `pip`:
 
