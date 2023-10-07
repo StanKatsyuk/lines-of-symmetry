@@ -63,3 +63,10 @@ def test_exceed_max_points():
     print(len(points))
     with pytest.raises(ValueError, match='Algorithm is not optimized to run with more than 100 points'):
         find_symmetry_lines(points)
+
+
+def test_collinear_points():
+    collinear_points = [Point(1, 1), Point(2, 2), Point(3, 3), Point(4, 4)]
+    expected_lines = 1
+    lines = find_symmetry_lines(collinear_points)
+    assert len(lines) == expected_lines
