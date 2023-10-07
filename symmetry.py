@@ -28,13 +28,33 @@ class Point:
         self.y = y
 
     def __eq__(self, other: 'Point') -> bool:
+        """
+        Checks if this point is equal to another point.
+
+        :param other: The other Point object to compare.
+        :return: True if the points are equal; otherwise, False.
+        """
         return self.x == other.x and self.y == other.y
 
     def __hash__(self) -> int:
+        """
+        Computes a hash value for the point.
+
+        :return: The hash value of the Point object.
+        """
         return hash((self.x, self.y))
 
 
 def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
+    """
+    Find lines of symmetry in a set of 2D points.
+
+    This function calculates the lines of symmetry based on the input points and returns a set
+    of tuples, where each tuple represents a line of symmetry in the form (slope, y-intercept).
+
+    :param points: A list of Point objects representing the 2D points.
+    :return: A set of tuples, each representing a line of symmetry.
+    """
     if not points:
         return set()
 
@@ -44,7 +64,6 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
     if len(points) > 100:
         print('too many')
         raise ValueError('Algorithm is not optimized to run with more than 100 points')
-
 
     def midpoint(p1, p2):
         """
@@ -103,6 +122,25 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         
         return (round(m_perpendicular, int(-math.log10(PRECISION))), round(c, int(-math.log10(PRECISION))))
 
+    def are_collinear(points: list[Point]) -> bool:
+        """
+        Checks if the given points are collinear.
+
+        :param points: List of Point objects.
+        :return: True if the points are collinear; otherwise, False.
+        """
+        if len(points) <= 2:
+            return True
+        m = slope(points[0], points[1])
+        for i in range(2, len(points)):
+            if slope(points[0], points[i]) != m:
+                return False
+        return True
+
+    # If the input points are collinear, return the perpendicular bisector
+    # of the line formed by the first and last points as the line of symmetry.
+    if are_collinear(points):
+        return {perpendicular_bisector(points[0], points[-1])}
 
     # Using a set avoids duplicates and ensures that each unique bisector is considered.
     potential_bisectors = set()
