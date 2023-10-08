@@ -62,3 +62,12 @@ def test_collinear_points():
     expected_lines = 1
     lines = find_symmetry_lines(collinear_points)
     assert len(lines) == expected_lines
+
+EXPECTED_ERROR_MESSAGE = 'Please provide at least two points'
+@pytest.mark.parametrize("input_points", [
+    [],
+    [Point(1, 1)]
+])
+def test_num_points_conditions(input_points):
+    with pytest.raises(ValueError, match=EXPECTED_ERROR_MESSAGE):
+        find_symmetry_lines(input_points)
