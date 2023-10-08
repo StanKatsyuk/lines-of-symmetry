@@ -21,15 +21,21 @@ class Point:
 
 
 def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
+    # Check if points is a list
+    if not isinstance(points, list):
+        raise TypeError("points must be a list")
+
+    # Check if every item in points is an instance of Point
+    for point in points:
+        if not isinstance(point, Point):
+            raise TypeError("Each item in the points list must be an instance of Point")
+
     points = list(set(points))
 
-    if not points:
-        return set()
-
-    if len(points) == 1:
-        return {points[0]}
-
-    if len(points) > 100:
+    num_points = len(points)
+    if num_points <= 1 or not num_points:
+        raise ValueError('Please provide at least two points')
+    elif num_points > 100:
         raise ValueError('Algorithm is not optimized to run with more than 100 points')
 
     def midpoint(p1, p2):
@@ -95,6 +101,7 @@ def find_symmetry_lines(points: list[Point]) -> set[tuple[float, float]]:
         
         return Point(x_prime, y_prime)
 
+    # TODO(Stan): This should be optimized to avoid the present O(n^2) runtime
     def is_symmetry_line(m: float, c: float, points: list[Point]) -> bool:
         for p in points:
             reflected = reflect_point(m, c, p)
