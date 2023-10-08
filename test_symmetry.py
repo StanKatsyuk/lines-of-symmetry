@@ -3,6 +3,10 @@ import math
 import random
 from symmetry import Point, find_symmetry_lines
 
+# Expected error messages
+EXPECTED_ERROR_MESSAGE = 'Please provide at least two points'
+EXPECTED_LIST_ERROR = "points must be a list"
+EXPECTED_ITEM_ERROR = "Each item in the points list must be an instance of Point"
 
 def generate_large_input(num_points: int, symmetric: bool = True) -> list[Point]:
     """
@@ -63,11 +67,21 @@ def test_collinear_points():
     lines = find_symmetry_lines(collinear_points)
     assert len(lines) == expected_lines
 
-EXPECTED_ERROR_MESSAGE = 'Please provide at least two points'
 @pytest.mark.parametrize("input_points", [
     [],
     [Point(1, 1)]
 ])
 def test_num_points_conditions(input_points):
     with pytest.raises(ValueError, match=EXPECTED_ERROR_MESSAGE):
+        find_symmetry_lines(input_points)
+
+@pytest.mark.parametrize("input_points, expected_error", [
+    (tuple([Point(1, 1), Point(2, 2)]), EXPECTED_LIST_ERROR),  # tuple instead of list
+    ({Point(1, 1), Point(2, 2)}, EXPECTED_LIST_ERROR),        # set instead of list
+    ("string", EXPECTED_LIST_ERROR),                          # string instead of list
+    ([Point(1, 1), "not_a_point"], EXPECTED_ITEM_ERROR),      # one item is not a Point
+    ([1, 2, 3], EXPECTED_ITEM_ERROR)                           # none of the items are Points
+])
+def test_input_type_conditions(input_points, expected_error):
+    with pytest.raises(TypeError, match=expected_error):
         find_symmetry_lines(input_points)
